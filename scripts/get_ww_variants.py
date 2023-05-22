@@ -21,4 +21,5 @@ print(list)
 # add variants to dictionary
 dict['XZ'] = 'Recombinant'
 
-dict.to_csv('~/wastewater-surveillance/data/dictionary.csv')
+dict_df = pd.DataFrame(dict, index=['Variant name'])
+dict_df.to_csv('~/wastewater-surveillance/data/dictionary.csv')
