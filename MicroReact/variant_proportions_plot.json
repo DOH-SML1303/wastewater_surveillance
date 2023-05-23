@@ -1,0 +1,71 @@
+# Wastewater Variant Proportions Custom Plot for MicroReact
+# Author: Steph M Lunn
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 1150,
+  "height": 500,
+  "data": {
+    "url": "...",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "mark": {
+    "type": "bar"
+  },
+  "encoding": {
+    "x": {
+      "timeUnit": "yearmonthdate",
+      "field": "Sample_Collection_Date",
+      "title": "Sample Collection Date",
+      "axis": {
+        "labelAngle": -45,
+        "tickBand": "extent"
+      }
+    },
+    "y": {
+      "field": "Variant_proportion",
+      "title": "Variant Proportions",
+      "type": "quantitative",
+      "stack": "normalize"
+    },
+    "color": {
+      "field": "variant",
+      "type": "nominal",
+      "title": "Wastewater Proportions in WA",
+      "scale": {
+        "range": [
+          "#333333",
+          "#e26028",
+          "#ff824c",
+          "#9ccc65",
+          "#7cb342",
+          "#d4e157",
+          "#c0ca33",
+          "#d1a170",
+          "#ffd54f",
+          "#ffb300",
+          "#80cbc4",
+          "#37c6ff",
+          "#81d4fa",
+          "#9e9d24",
+          "#006064",
+          "#00838f",
+          "#7b5c00",
+          "#b39ddb",
+          "#8c9eff",
+          "#ff0000",
+          "#aab2de",
+          "#4527a0",
+          "#5565bd",
+          "#1a237e",
+          "#394ffe",
+          "#536dfe",
+          "#f7bcdf",
+          "#eeeeee"
+        ]
+      }
+    }
+  }
+}
