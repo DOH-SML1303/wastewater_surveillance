@@ -1,6 +1,3 @@
-# Wastewater Variant Proportions Custom Plot for MicroReact
-# Author: Steph M Lunn
-
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 1150,
