@@ -9,12 +9,28 @@ def read_files(input_file_1):
     return data_hexcodes
 
 def convert_dates(data_hexcodes):
+    # Create a copy of the DataFrame to avoid modifying the original data
     new_df = data_hexcodes.copy()
+
+    # Define transformations for date-related columns
+    transformations = {
+        'ISO_Year': lambda df: df['Sample_Collection_Date'].dt.isocalendar().year,
+        'ISO_Month': lambda df: df['Sample_Collection_Date'].dt.month,
+        'ISO_Week': lambda df: df['Sample_Collection_Date'].dt.isocalendar().week
+    }
+
+    # Convert 'Sample_Collection_Date' to datetime
     new_df['Sample_Collection_Date'] = pd.to_datetime(new_df['Sample_Collection_Date'])
-    new_df['ISO_Year'] = new_df['Sample_Collection_Date'].dt.isocalendar().year
-    new_df['ISO_Month'] = new_df['Sample_Collection_Date'].dt.month
-    new_df['ISO_Week'] = new_df['Sample_Collection_Date'].dt.isocalendar().week
-    new_df['Date'] = new_df['ISO_Year'].astype(str) + '-' + new_df['ISO_Month'].astype(str).str.zfill(2) + '-W' + new_df['ISO_Week'].astype(str).str.zfill(2)
+
+    # Apply transformations using a for loop
+    for column, transform_func in transformations.items():
+        new_df[column] = transform_func(new_df)
+
+    # Create 'Date' column from the transformed columns
+    new_df['Date'] = (new_df['ISO_Year'].astype(str) + '-' +
+                      new_df['ISO_Month'].astype(str).str.zfill(2) + '-W' +
+                      new_df['ISO_Week'].astype(str).str.zfill(2))
+
     return new_df
 
 def aggregate_proportions(new_df):
