@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-directory = '~/wastewater-surveillance/data'
+directory = '/home/ubuntu/wastewater_surveillance/data/db_update_dump'
 
 dataframes = []
 
@@ -15,4 +15,4 @@ for filename in os.listdir(directory):
 combined_df = pd.concat(dataframes, ignore_index=True)
 print(combined_df.head())
 
-combined_df.to_csv('~/wastewater-surveillance/data/WW_master.csv')
+combined_df.to_csv('~/wastewater_surveillance/data/WW_master.csv')
