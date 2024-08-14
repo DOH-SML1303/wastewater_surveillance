@@ -16,6 +16,7 @@ def main(input_file_1, input_file_2, output_file):
     data, variants = read_files(input_file_1, input_file_2)
     merged_df = merge_files(data, variants)
     merged_df.to_csv(output_file, index=False)
+    print("Parent lineage class has been added.")
 
 if __name__ == "__main__":
     if len(sys.argv) !=4:
