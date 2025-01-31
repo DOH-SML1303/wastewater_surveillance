@@ -1,0 +1,2 @@
+Map of weekly dominant variant in each county for the past 3 months given recent wastewater sequencing data. There are 19 counties that we are not sequencing from.
+

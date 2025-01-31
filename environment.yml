@@ -1,0 +1,28 @@
+name: wastewater_pipeline
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10  # Ensure compatibility with packages
+  - snakemake
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - openpyxl  # For working with Excel files
+  - xlsxwriter  # For Excel report generation
+  - jinja2  # For report templating
+  - pyyaml  # Required for Snakemake workflows
+  - biopython  # For handling biological data
+  - scikit-learn  # For QC and data analysis
+  - plotly  # For interactive visualizations
+  - geopandas  # For geographic data related to sample sites
+  - pyproj  # For geographic coordinate transformations
+  - shapely  # For handling geometric objects
+  - requests  # For accessing remote data
+  - tqdm  # For progress bars
+  - pip
+  - pip:
+      - openpyxl-styler  # Optional for enhanced Excel formatting
+      - markdown2  # For Markdown rendering in reports

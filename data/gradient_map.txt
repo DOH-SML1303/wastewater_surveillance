@@ -1,0 +1,1 @@
+Sample representation by county in Washington state for 2024 - 2025; cool colors indicate low or no samples and warm colors indicate higher sample representation. There are 19 counties of which we are currently not receiving any wastewater samples from to perform wastewater sequencing for variant detection.

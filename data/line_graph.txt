@@ -1,0 +1,1 @@
+This line graph shows the average proportion by week for the top three SARS-CoV-2 variants in the wastewater sampled across Washington state.

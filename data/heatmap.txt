@@ -1,0 +1,2 @@
+This heatmap shows the latest variant proportions for the past 8 weeks since the time the report was generated.
+Variants at lower proportions are shown in cool colors whereas variants at higher proportion are shown in warmer colors.
