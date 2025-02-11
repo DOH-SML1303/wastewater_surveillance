@@ -27,12 +27,17 @@ def get_top_variants(cleaned, top_n=3):
     top_variants = mean_proportions.head(top_n).index
     return cleaned[top_variants], top_variants
 
-def create_heatmap(cleaned, output_1):
+def transform_data(cleaned):
+    heatmap_data = cleaned.T
+    heatmap_data.to_csv("results/heatmap_data.csv")
+    return heatmap_data
+
+def create_heatmap(heatmap_data, output_1):
     plt.figure(figsize=(12,8))
-    sns.heatmap(cleaned, annot=True, fmt=".1f", cmap="coolwarm", cbar_kws={'label': 'Proportion (%)'})
+    sns.heatmap(heatmap_data, annot=True, fmt=".1f", cmap="Blues", cbar_kws={'label': 'Proportion (%)'})
     plt.title('Heatmap of Variant Proportions in Wastewater from Last 8 Weeks')
-    plt.ylabel('Sample Collection Date by Week')
-    plt.xlabel('Variant')
+    plt.xlabel('Sample Collection Date by Week')
+    plt.ylabel('Variant')
     plt.tight_layout()
     plt.savefig(output_1)
     plt.close()
@@ -59,7 +64,8 @@ def main(input_file_1, master_file, output_1, output_2):
     last_8_weeks = get_last_8_weeks(data)
     cleaned = drop_old_variants(last_8_weeks)
     top_variants_data, top_variants = get_top_variants(cleaned, top_n=3)
-    create_heatmap(cleaned, output_1)
+    heatmap_data = transform_data(cleaned)
+    create_heatmap(heatmap_data, output_1)
     create_line_graph(cleaned, top_variants, master_line_list, output_2)
     print("proportions table and graphs generated")
 
