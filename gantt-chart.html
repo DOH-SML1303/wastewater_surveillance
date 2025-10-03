@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wastewater Sequencing Gantt Chart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #1f2937;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 6px;
+        }
+        
+        .controls h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .task-name {
+            min-width: 250px;
+        }
+        
+        .indent-1 {
+            padding-left: 30px;
+        }
+        
+        .parent-task {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .chart-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .gantt-table {
+            font-size: 10px;
+        }
+        
+        .gantt-header {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .date-cell {
+            width: 24px;
+            min-width: 24px;
+            text-align: center;
+            padding: 4px 2px;
+            font-size: 9px;
+        }
+        
+        .weekend {
+            background: #e5e7eb;
+        }
+        
+        .task-bar {
+            height: 20px;
+            border-radius: 4px;
+            opacity: 0.75;
+            transition: opacity 0.2s;
+        }
+        
+        .task-bar:hover {
+            opacity: 1;
+        }
+        
+        .bar-steph { background: #3b82f6; }
+        .bar-dan { background: #10b981; }
+        .bar-alli { background: #8b5cf6; }
+        .bar-both { background: #f59e0b; }
+        
+        .btn {
+            padding: 8px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+        }
+        
+        .note {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+            font-size: 11px;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wastewater Sequencing Roadmap</h1>
+        <p class="subtitle">October 2025 - Early November 2025</p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color bar-steph"></div>
+                <span>Steph</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color bar-dan"></div>
+                <span>Dan</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color bar-alli"></div>
+                <span>Alli</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color bar-both"></div>
+                <span>Both</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>Edit Tasks (click "Update Chart" after making changes)</h3>
+            <table id="taskTable">
+                <thead>
+                    <tr>
+                        <th class="task-name">Task Name</th>
+                        <th>Owner</th>
+                        <th>Start Date</th>
+                        <th>Duration (days)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                </tbody>
+            </table>
+            <button class="btn" onclick="updateChart()">Update Chart</button>
+            <button class="btn" onclick="addTask()" style="background: #10b981;">Add New Task</button>
+            <button class="btn" onclick="saveChanges()" style="background: #8b5cf6;">Save Changes</button>
+            <button class="btn" onclick="exportToJSON()" style="background: #f59e0b;">Export JSON</button>
+            <button class="btn" onclick="resetToDefaults()" style="background: #6b7280;">Reset to Defaults</button>
+        </div>
+
+        <div class="chart-container">
+            <table class="gantt-table" id="ganttChart">
+            </table>
+        </div>
+
+        <div class="note">
+            <strong>How to use:</strong> Edit the task names, owners, start dates, or durations in the table above. Click "Update Chart" to see changes in the Gantt chart. Click "Save Changes" to persist your data across browser sessions. Use "Export JSON" to download a backup of your tasks.
+        </div>
+    </div>
+
+    <script>
+        const defaultTasks = [
+            { id: 1, name: 'Finalize visualizations produced for the report', owner: 'Steph', start: '2025-10-01', duration: 15, indent: 0, parent: true },
+            { id: 2, name: 'Review feedback from WAWBE team and COVID SME', owner: 'Steph', start: '2025-10-01', duration: 5, indent: 1, parent: false },
+            { id: 3, name: 'Make adjustments to figures', owner: 'Steph', start: '2025-10-06', duration: 5, indent: 1, parent: false },
+            { id: 4, name: 'Polish figures for final deployment', owner: 'Steph', start: '2025-10-11', duration: 5, indent: 1, parent: false },
+            { id: 5, name: 'Move to modularized workflow (Snakemake)', owner: 'Dan', start: '2025-10-01', duration: 20, indent: 0, parent: true },
+            { id: 6, name: 'Transition scripts to rules', owner: 'Dan', start: '2025-10-01', duration: 7, indent: 1, parent: false },
+            { id: 7, name: 'Enable end-to-end workflow execution', owner: 'Dan', start: '2025-10-08', duration: 7, indent: 1, parent: false },
+            { id: 8, name: 'Set up dependency management (YAML/conda)', owner: 'Dan', start: '2025-10-15', duration: 6, indent: 1, parent: false },
+            { id: 9, name: 'Move workflow to NW-PaGe public GitHub', owner: 'Dan, Steph', start: '2025-10-21', duration: 14, indent: 0, parent: true },
+            { id: 10, name: 'Create private repo with relative paths', owner: 'Dan, Steph', start: '2025-10-21', duration: 3, indent: 1, parent: false },
+            { id: 11, name: 'Write README documentation', owner: 'Dan, Steph', start: '2025-10-24', duration: 4, indent: 1, parent: false },
+            { id: 12, name: 'Create/source test Freyja data', owner: 'Dan, Steph', start: '2025-10-28', duration: 3, indent: 1, parent: false },
+            { id: 13, name: 'Test deployability with new team member', owner: 'Dan, Steph', start: '2025-10-31', duration: 4, indent: 1, parent: false },
+            { id: 14, name: 'Link to WW report on nwpage.org', owner: 'Alli', start: '2025-10-15', duration: 2, indent: 0, parent: true },
+            { id: 15, name: 'Containerize the WW workflow', owner: 'Dan', start: '2025-11-01', duration: 7, indent: 0, parent: true },
+            { id: 16, name: 'Build container (Singularity/Docker)', owner: 'Dan', start: '2025-11-01', duration: 3, indent: 1, parent: false },
+            { id: 17, name: 'Document maintenance process', owner: 'Dan', start: '2025-11-04', duration: 2, indent: 1, parent: false },
+            { id: 18, name: 'Train Steph on container rebuilding', owner: 'Dan, Steph', start: '2025-11-06', duration: 2, indent: 1, parent: false }
+        ];
+
+        let tasks = JSON.parse(JSON.stringify(defaultTasks));
+
+        // Load saved tasks from localStorage on page load
+        function loadSavedTasks() {
+            const saved = localStorage.getItem('ganttTasks');
+            if (saved) {
+                try {
+                    tasks = JSON.parse(saved);
+                    console.log('Loaded saved tasks from browser storage');
+                } catch (e) {
+                    console.error('Error loading saved tasks:', e);
+                    tasks = JSON.parse(JSON.stringify(defaultTasks));
+                }
+            }
+        }
+
+        function generateDateRange(startDate, endDate) {
+            const dates = [];
+            const current = new Date(startDate);
+            const end = new Date(endDate);
+            
+            while (current <= end) {
+                dates.push(new Date(current));
+                current.setDate(current.getDate() + 1);
+            }
+            return dates;
+        }
+
+        function isWeekend(date) {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+        }
+
+        function getOwnerClass(owner) {
+            if (owner.includes('Steph') && owner.includes('Dan')) return 'bar-both';
+            if (owner.includes('Steph')) return 'bar-steph';
+            if (owner.includes('Dan')) return 'bar-dan';
+            if (owner.includes('Alli')) return 'bar-alli';
+            return 'bar-both';
+        }
+
+        function renderTaskTable() {
+            const tbody = document.getElementById('taskTableBody');
+            tbody.innerHTML = '';
+            
+            tasks.forEach((task, index) => {
+                const row = document.createElement('tr');
+                row.className = task.parent ? 'parent-task' : '';
+                
+                row.innerHTML = `
+                    <td class="task-name ${task.indent === 1 ? 'indent-1' : ''}">
+                        <input type="text" value="${task.name}" onchange="updateTask(${index}, 'name', this.value)">
+                    </td>
+                    <td>
+                        <input type="text" value="${task.owner}" onchange="updateTask(${index}, 'owner', this.value)">
+                    </td>
+                    <td>
+                        <input type="date" value="${task.start}" onchange="updateTask(${index}, 'start', this.value)">
+                    </td>
+                    <td>
+                        <input type="number" value="${task.duration}" min="1" onchange="updateTask(${index}, 'duration', parseInt(this.value))">
+                    </td>
+                    <td>
+                        <button onclick="deleteTask(${index})" style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px;">Delete</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateTask(index, field, value) {
+            tasks[index][field] = value;
+        }
+
+        function renderGanttChart() {
+            const dateRange = generateDateRange('2025-10-01', '2025-11-08');
+            const gantt = document.getElementById('ganttChart');
+            
+            let html = '<thead><tr class="gantt-header">';
+            html += '<th class="task-name">Task</th>';
+            html += '<th style="min-width: 80px;">Owner</th>';
+            html += '<th style="min-width: 50px;">Duration</th>';
+            
+            dateRange.forEach(date => {
+                const weekend = isWeekend(date) ? 'weekend' : '';
+                html += `<th class="date-cell ${weekend}">
+                    <div>${date.getDate()}</div>
+                    <div style="font-size: 8px; color: #6b7280;">${date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}</div>
+                </th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            tasks.forEach(task => {
+                const taskStart = new Date(task.start);
+                const chartStart = new Date('2025-10-01');
+                const startOffset = Math.floor((taskStart - chartStart) / (1000 * 60 * 60 * 24));
+                
+                html += `<tr class="${task.parent ? 'parent-task' : ''}">`;
+                html += `<td class="task-name ${task.indent === 1 ? 'indent-1' : ''}" style="font-size: 10px;">${task.name}</td>`;
+                html += `<td style="font-size: 10px;">${task.owner}</td>`;
+                html += `<td style="font-size: 10px;">${task.duration}d</td>`;
+                
+                dateRange.forEach((date, idx) => {
+                    const weekend = isWeekend(date) ? 'weekend' : '';
+                    let cellContent = '';
+                    
+                    if (idx >= startOffset && idx < startOffset + task.duration) {
+                        if (idx === startOffset) {
+                            const barWidth = task.duration * 24;
+                            cellContent = `<div class="task-bar ${getOwnerClass(task.owner)}" style="width: ${barWidth}px; position: absolute;"></div>`;
+                        }
+                    }
+                    
+                    html += `<td class="date-cell ${weekend}" style="position: relative;">${cellContent}</td>`;
+                });
+                
+                html += '</tr>';
+            });
+            
+            html += '</tbody>';
+            gantt.innerHTML = html;
+        }
+
+        function updateChart() {
+            renderGanttChart();
+        }
+
+        function addTask() {
+            const newTask = {
+                id: tasks.length + 1,
+                name: 'New Task',
+                owner: 'Owner',
+                start: '2025-10-01',
+                duration: 5,
+                indent: 0,
+                parent: false
+            };
+            tasks.push(newTask);
+            renderTaskTable();
+            renderGanttChart();
+        }
+
+        function deleteTask(index) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                tasks.splice(index, 1);
+                renderTaskTable();
+                renderGanttChart();
+            }
+        }
+
+        function saveChanges() {
+            localStorage.setItem('ganttTasks', JSON.stringify(tasks));
+            alert('Changes saved! Your data will persist when you reload the page.');
+        }
+
+        function exportToJSON() {
+            const dataStr = JSON.stringify(tasks, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'gantt-tasks.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetToDefaults() {
+            if (confirm('This will reset to the original roadmap and clear saved data. Continue?')) {
+                tasks = JSON.parse(JSON.stringify(defaultTasks));
+                localStorage.removeItem('ganttTasks');
+                renderTaskTable();
+                renderGanttChart();
+            }
+        }
+
+        // Initial render
+        loadSavedTasks();
+        renderTaskTable();
+        renderGanttChart();
+    </script>
+</body>
+</html>
